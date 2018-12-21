@@ -147,8 +147,11 @@ static void previousTrack() {
 }
 
 // LED
-#define LED_POWER 6               // power led, always on if powered (preferably red)
-#define LED_PLAY  7               // status led,on if isPlaying() (maybe green)
+#define LED_POWER
+#define LED_PLAY
+
+#define LED_POWER_PIN 6               // power led, always on if powered (preferably red)
+#define LED_PLAY_PIN  7               // status led,on if isPlaying() (maybe green)
 
 
 // MFRC522
@@ -190,9 +193,12 @@ void setup() {
   Serial.println(F("(c) Thorsten Voß"));
 
   // Init LED
-
-  pinMode(LED_PLAY, OUTPUT);
-  pinMode(LED_POWER,OUTPUT);
+  #if defined(LED_PLAY)  
+  pinMode(LED_PLAY_PIN, OUTPUT);
+  #endif
+  #if defined(LED_POWER)
+  pinMode(LED_POWER_PIN,OUTPUT);
+  #endif
 
   // Knöpfe mit PullUp
   pinMode(buttonPause, INPUT_PULLUP);
@@ -226,7 +232,9 @@ void setup() {
   }
 
   // Power on Power LED
-  digitalWrite(LED_POWER, HIGH);  
+  #if defined(LED_POWER)
+  digitalWrite(LED_POWER_PIN, HIGH);  
+  #endif
 }
 
 void loop() {
@@ -239,12 +247,15 @@ void loop() {
     downButton.read();
 
     // activate play led
+    #if defined(LED_PLAY)
     if (isPlaying()){
-        digitalWrite(LED_PLAY,HIGH);
+        digitalWrite(LED_PLAY_PIN,HIGH);
     }
     else{
-        digitalWrite(LED_PLAY,LOW);
+        digitalWrite(LED_PLAY_PIN,LOW);
     }
+    #endif
+    
     if (pauseButton.wasReleased()) {
       if (ignorePauseButton == false)
         if (isPlaying())
